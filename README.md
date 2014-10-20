@@ -13,9 +13,12 @@
 
 -6- Можно с помощью PHP сохранять идентифиракоты посетителей в таблицу БД ("идентификатор" unique index,"количество","данные о пользователе").
 Идентификатором скорее всего будет IP адрес. При каждом посещении делать запрос типа:
-UPDATE visitors SET count = count+1 WHERE id='192.168.1.2'
+
+`UPDATE visitors SET count = count+1 WHERE id='192.168.1.2'`
+
 если affected rows будет равен 0 то:
-INSERT INTO visitors (id) VALUES('192.168.1.2')
+
+`INSERT INTO visitors (id) VALUES('192.168.1.2')`
 
 REQUIREMENTS
 ------------
@@ -26,6 +29,9 @@ INSTALLATION
 ------------
 
 Клонировать репозиторий,
+
 установить зависимости через Composer,
+
 создать БД, импортировать `db_dump.sql`,
+
 ввести настроки БД в `config/db.php`.
