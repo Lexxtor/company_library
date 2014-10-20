@@ -49,8 +49,11 @@ class BookController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'reader' => $model->getReader()->select('id,name')->asArray()->one(),
         ]);
     }
 

@@ -36,8 +36,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value'=>implode(', ',ArrayHelper::getColumn($model->getAuthors()->select('name')->asArray()->all(), 'name')),
             ],
             [
-                'label'=>'Читатели',
-                'value'=>implode(', ',ArrayHelper::getColumn($model->getReaders()->select('name')->asArray()->all(), 'name')),
+                'format'=>'raw',
+                'label'=>'Читатель',
+                'value'=>$reader ? Html::a($reader['name'], ['reader/view','id'=>$reader['id']]) : 'нет',
             ],
             'date_inserted',
             'date_updated',

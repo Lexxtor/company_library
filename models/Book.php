@@ -9,6 +9,7 @@ use Yii;
  *
  * @property integer $id
  * @property string $title
+ * @property integer $reader_id
  * @property string $count_authors
  * @property string $date_inserted
  * @property string $date_updated
@@ -35,8 +36,9 @@ class Book extends \yii\db\ActiveRecord
     {
         return [
             [['title'], 'required'],
+            [['title'], 'string', 'max' => 200],
+            [['reader_id'], 'integer', 'max' => 200],
             [['authors_ids'], 'filter', 'filter' => 'array_unique'],
-            [['title'], 'string', 'max' => 200]
         ];
     }
 
@@ -71,6 +73,7 @@ class Book extends \yii\db\ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
+
         if (!$insert) $this->deleteAllAuthors();
         $this->addAuthors($this->authors_ids);
     }
@@ -113,17 +116,8 @@ class Book extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getReaders()
+    public function getReader()
     {
-        return $this->hasMany(Reader::className(), ['id' => 'reader_id'])
-            ->via('reader2books');
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getReader2books()
-    {
-        return $this->hasMany(Reader2book::className(), ['book_id' => 'id']);
+        return $this->hasOne(Reader::className(), ['id' => 'reader_id']);
     }
 }

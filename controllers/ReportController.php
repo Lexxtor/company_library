@@ -15,20 +15,19 @@ class ReportController extends \yii\web\Controller
         // report 1
         $reportOneDataProvider = new ActiveDataProvider([
             'query' => Book::findBySql('
-                SELECT book.id, title FROM '.Book::tableName().' book
-                JOIN '.Reader2book::tableName().' ON (book.id = book_id)
-                WHERE count_authors >= 3
-                GROUP BY book.id')
+                SELECT id, title FROM '.Book::tableName().'
+                WHERE reader_id IS NOT NULL AND count_authors >= 3
+            ')
         ]);
 
         // report 2
         $reportTwoDataProvider = new ActiveDataProvider([
             'query' => Author::findBySql('
-                SELECT a.id, a.name , count(r2b.reader_id) as readers FROM '.Author::tableName().' a
+                SELECT a.id, a.name , count(book.reader_id) as readers FROM '.Author::tableName().' a
                 JOIN '.Book2author::tableName().' b2a ON (a.id = b2a.author_id)
-                JOIN '.Reader2book::tableName().' r2b ON (r2b.book_id = b2a.book_id)
+                JOIN '.Book::tableName().' book ON (book.id = b2a.book_id)
                 GROUP BY a.id
-                HAVING count(r2b.reader_id) > 3
+                HAVING count(book.reader_id) > 3
                 ')
         ]);
 

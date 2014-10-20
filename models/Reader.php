@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "reader".
@@ -34,7 +35,7 @@ class Reader extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['books_ids'], 'filter', 'filter' => 'array_unique'],
+            [['books_ids'], 'safe'],
             [['name'], 'string', 'max' => 200]
         ];
     }
@@ -63,50 +64,33 @@ class Reader extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getReader2authors()
-    {
-        return $this->hasMany(Reader2author::className(), ['reader_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getReader2books()
-    {
-        return $this->hasMany(Reader2book::className(), ['reader_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getBooks()
     {
-        return $this->hasMany(Book::className(), ['id' => 'book_id'])
-            ->via('reader2books');
+        return $this->hasMany(Book::className(), ['reader_id' => 'id']);
     }
 
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
+
         if (!$insert) $this->deleteAllBooks();
         $this->addBooks($this->books_ids);
     }
 
     public function deleteAllBooks()
     {
-        Reader2book::deleteAll('reader_id = :reader_id', [':reader_id'=>$this->id]);
+        Book::updateAll(['reader_id'=>null], 'reader_id = :reader_id', [':reader_id'=>$this->id]);
     }
 
     public function addBooks($books_ids)
     {
         if (empty($books_ids)) return;
 
+        // так как в Yii2 нет возможности биндить массивы, фильтруем значения сами:
         $values = [];
         foreach ($books_ids AS $id)
-            $values[] = [$this->id, $id];
+            $values[] = intval($id);
 
-        Yii::$app->db->createCommand()
-            ->batchInsert(Reader2book::tableName(), ['reader_id','book_id'], $values)
-            ->execute();
+        Book::updateAll(['reader_id'=>$this->id], 'id IN ('.implode(',',$values).')');
     }
 }

@@ -1,89 +1,31 @@
-Yii 2 Basic Application Template
+Библиотека компании
 ================================
 
-Yii 2 Basic Application Template is a skeleton Yii 2 application best for
-rapidly creating small projects.
+1. DDL для базы я сохранил в файл db_dump.sql
+Для ускорения выборки для отчета в таблице книг сделал поле "кол-во авторов"
 
-The template contains the basic features including user login/logout and a contact page.
-It includes all commonly used configurations that would allow you to focus on adding new
-features to your application.
+3. Для вывода списка авторов, чьи книги в данный момент читает более трех читателей, можно сделать дополнительную таблицу связей авторов и читателей, это позволит написать более быстрый запрос на выборку, но замедлит добавление авторов и читателей к книгам.
+Для вывод пяти случайных книг я использовал один из быстрейших запросов для таблиц с "дырами" в последовательности ID, но он требует кеширования, так как он медленный.
+Если надо получать случайные книги в реальном времени (без кеширования), то можно добавить индексируемое поле с последовательностью чисел без "дыр" (обновлять его при удалении записи) и написать запрос с его ипользованием. Это ускорит выборку, но замедлит добавление и удаление записей.
 
+5. Можно использовать FULLTEXT индекс в MySQL. Но лучше использовать Sphinx сервер, в нем есть возможность распределенного хранения индексов.
+Для получения срезов данных, к примеру количество запросов на поиск определенной книги за некоторый период, можно сохранять все запросы в БД в такую таблицу: ID, Query, date с индексами на все поля. Потом по ней можно делать поиск. Если данных будет очень много, а периоды большие, можно добавить поле "количество запросов" и периодически объединять несколько записей с одинаковыми запросами и близким временем в одну.
 
-DIRECTORY STRUCTURE
--------------------
-
-      assets/             contains assets definition
-      commands/           contains console commands (controllers)
-      config/             contains application configurations
-      controllers/        contains Web controller classes
-      mail/               contains view files for e-mails
-      models/             contains model classes
-      runtime/            contains files generated during runtime
-      tests/              contains various tests for the basic application
-      vendor/             contains dependent 3rd-party packages
-      views/              contains view files for the Web application
-      web/                contains the entry script and Web resources
-
-
+6. Можно с помощью PHP сохранять идентифиракоты посетителей в таблицу БД ("идентификатор" unique index,"количество","данные о пользователе").
+Идентификатором скорее всего будет IP адрес. При каждом посещении делать запрос типа:
+UPDATE visitors SET count = count+1 WHERE id='192.168.1.2'
+если affected rows будет равен 0 то:
+INSERT INTO visitors (id) VALUES('192.168.1.2')
 
 REQUIREMENTS
 ------------
 
-The minimum requirement by this application template that your Web server supports PHP 5.4.0.
-
+The minimum requirement that your Web server supports PHP 5.4.0.
 
 INSTALLATION
 ------------
 
-### Install from an Archive File
-
-Extract the archive file downloaded from [yiiframework.com](http://www.yiiframework.com/download/) to
-a directory named `basic` that is directly under the Web root.
-
-You can then access the application through the following URL:
-
-~~~
-http://localhost/basic/web/
-~~~
-
-
-### Install via Composer
-
-If you do not have [Composer](http://getcomposer.org/), you may install it by following the instructions
-at [getcomposer.org](http://getcomposer.org/doc/00-intro.md#installation-nix).
-
-You can then install this application template using the following command:
-
-~~~
-php composer.phar global require "fxp/composer-asset-plugin:1.0.0-beta2"
-php composer.phar create-project --prefer-dist --stability=dev yiisoft/yii2-app-basic basic
-~~~
-
-Now you should be able to access the application through the following URL, assuming `basic` is the directory
-directly under the Web root.
-
-~~~
-http://localhost/basic/web/
-~~~
-
-
-CONFIGURATION
--------------
-
-### Database
-
-Edit the file `config/db.php` with real data, for example:
-
-```php
-return [
-    'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=yii2basic',
-    'username' => 'root',
-    'password' => '1234',
-    'charset' => 'utf8',
-];
-```
-
-**NOTE:** Yii won't create the database for you, this has to be done manually before you can access it.
-
-Also check and edit the other files in the `config/` directory to customize your application.
+Клонировать репозиторий,
+установить зависимости через Composer,
+создать БД, импортировать `db_dump.sql`,
+ввести настроки БД в `config/db.php`.

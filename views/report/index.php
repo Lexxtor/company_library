@@ -9,9 +9,9 @@ use yii\helpers\Html;
 ?>
 <h1>Отчеты</h1>
 
-    <p>
+    <h4>
         1. Вывод списка книг, находящихся на руках у читателей, и имеющих не менее трех со-авторов.
-    </p>
+    </h4>
 <?= GridView::widget([
     'dataProvider' => $reportOneDataProvider,
     'columns' => [
@@ -25,9 +25,9 @@ use yii\helpers\Html;
         ],
     ],
 ]); ?>
-    <p>
+    <h4>
         2. Вывод списка авторов, чьи книги в данный момент читает более трех читателей.
-    </p>
+    </h4>
 <?= GridView::widget([
     'dataProvider' => $reportTwoDataProvider,
     'columns' => [
@@ -36,9 +36,9 @@ use yii\helpers\Html;
         'readers',
     ],
 ]); ?>
-    <p>
+    <h4>
         3. Вывод пяти случайных книг.
-    </p>
+    </h4>
 <?if ($this->beginCache('randomBooksHtml', ['duration' => 5])) {?>
 <?= GridView::widget([
     'dataProvider' => $reportThreeDataProvider,
