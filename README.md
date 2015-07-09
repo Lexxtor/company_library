@@ -33,7 +33,7 @@ The minimum requirement that your Web server supports PHP 5.4.0.
 INSTALLATION
 ------------
 
-Клонировать репозиторий,
+Клонировать репозиторий или скачать файлы себе,
 
 установить зависимости через Composer,
 
